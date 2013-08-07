@@ -1,0 +1,122 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the Migrate Sitra module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function migrate_sitra_schema() {
+	$schema['migrate_sitra_notifications'] = array(
+		'description' => 'Stores confirmations sent by Sitra at the end of export processes.',
+		'fields' => array(
+			'snid' => array(
+				'description' => 'Sitra notification unique ID.',
+				'type' => 'serial',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+			'website_id' => array(
+				'description' => 'Website\'s unique Sitra ID.',
+				'type' => 'int',
+ 				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+			'status' => array(
+				'description' => 'True if export succeeded, false if not.',
+				'type' => 'int',
+				'size' => 'tiny',
+				'not null' => TRUE,
+			),
+			'casual' => array(
+				'description' => 'True if one-time export, false if regular export.',
+				'type' => 'int',
+				'size' => 'tiny',
+				'not null' => TRUE,
+			),
+			'reinitiated' => array(
+				'description' => 'True if data are fully re-exported, false if export is incremental.',
+				'type' => 'int',
+				'size' => 'tiny',
+				'not null' => TRUE,
+			),
+			'export_url' => array(
+				'description' => 'Url from which export file can be retrieved. Null if export failed.',
+				'type' => 'varchar',
+				'length' => '255',
+				'not null' => TRUE,
+				'default' => '',
+			),
+			'confirm_url' => array(
+				'description' => 'Url to which confirmation must be sent. Null if export failed.',
+				'type' => 'varchar',
+				'length' => '255',
+				'not null' => TRUE,
+				'default' => '',
+			),
+			'confirmed' => array(
+				'description' => 'True if confirmation request succeeded, false if not.',
+				'type' => 'int',
+				'size' => 'tiny',
+				'not null' => TRUE,
+				'default' => 0
+			),
+			'date' => array(
+				'description' => 'The Unix timestamp when the notification was received.',
+				'type' => 'int',
+				'not null' => TRUE,
+				'default' => 0,
+			),
+		),
+  	'primary key' => array('snid'),
+	);
+	
+	$schema['migrate_sitra_exported'] = array(
+		'description' => 'Stores name and path of exported files.',
+		'fields' => array(
+			'fid' => array(
+				'description' => 'Exported file unique ID.',
+				'type' => 'serial',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+			'filename' => array(
+				'description' => 'Name of the exported file.',
+				'type' => 'varchar',
+				'length' => '255',
+				'not null' => TRUE,
+				'default' => '',
+			),
+			'path' => array(
+				'description' => 'Local path to the exported file.',
+				'type' => 'varchar',
+				'length' => '255',
+				'not null' => TRUE,
+				'default' => '',
+			),
+			'download_date' => array(
+				'description' => 'The Unix timestamp when the export file was downloaded locally.',
+				'type' => 'int',
+				'not null' => TRUE,
+				'default' => 0,
+			),
+			'imported' => array(
+				'description' => 'True if Sitra data have been imported into Drupal, false if not yet.',
+				'type' => 'int',
+				'size' => 'tiny',
+				'not null' => TRUE,
+				'default' => 0
+			),
+			'import_date' => array(
+				'description' => 'The Unix timestamp when the Sitra data have been imported.',
+				'type' => 'int',
+				'not null' => TRUE,
+				'default' => 0,
+			),
+		),
+  	'primary key' => array('fid'),
+	);
+	
+	return $schema;
+}
