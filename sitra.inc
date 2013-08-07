@@ -1,7 +1,9 @@
 <?php
 /**
  * @file 
- * @author Christophe Espiau
+ * @author Christophe Espiau <christophe.espiau@korora.fr>
+ * @license GPL
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  *
  */
 
@@ -9,6 +11,9 @@ abstract class BasicSitraMigration extends Migration {
 	
 	// Path to the Sitra export files.
 	protected $export_path = '';
+	
+	// Boolean. False if export files folder contains files, true if empty.
+	//protected $export_folder_is_empty = false;
 	
 	// An array of all Sitra elements referenced to by the exported objects. 
 	protected $elements_reference = array();
@@ -25,22 +30,27 @@ abstract class BasicSitraMigration extends Migration {
 		parent::__construct();
 		
 		// Build path to exported json data.
-		$this->export_path = variable_get('file_public_path', conf_path() . '/files') . '/sitra-exports/';
+		$this->export_path = variable_get('file_public_path', conf_path() . '/files') . '/sitra-imports/';
 		
-		// Reference elements data are cached at $this->elements_reference.
-		if (empty($this->elements_reference)) {
-			$json = file_get_contents($this->export_path . 'elements_reference.json');
-			$this->elements_reference = drupal_json_decode($json);
-		}
-		
-		// Communes data are cached at $this->communes;
-		if (empty($this->communes)) {
-			$json = file_get_contents($this->export_path . 'communes.json');
-			$communes_data = drupal_json_decode($json);
-			foreach ($communes_data as $data) {
-				$this->communes[$data['id']] = $data['nom'];
+		//if (!$this->folder_is_empty($this->export_path)) {
+			// Reference elements data are cached at $this->elements_reference.
+			if (empty($this->elements_reference)) {
+				$json = file_get_contents($this->export_path . 'elements_reference.json');
+				$this->elements_reference = drupal_json_decode($json);
 			}
+			
+			// Communes data are cached at $this->communes;
+			if (empty($this->communes)) {
+				$json = file_get_contents($this->export_path . 'communes.json');
+				$communes_data = drupal_json_decode($json);
+				foreach ($communes_data as $data) {
+					$this->communes[$data['id']] = $data['nom'];
+				}
+			//}
 		}
+// 		else {
+// 			$this->export_folder_is_empty = true;
+// 		}
 	}
 	
 	public function getElementReferenceLibelle($id, $language='Fr') {
@@ -87,17 +97,24 @@ abstract class BasicSitraMigration extends Migration {
 						break;
 					case "202":
 						$row->fax = $moyen->coordonnee;
+						//$fax = $moyen->coordonnee;
 						break;
 					case "204":
 						$row->email = $moyen->coordonnee;
+						//$email = $moyen->coordonnee;
 						break;
 					case "205":
 						$row->siteweb = $moyen->coordonnee;
+						//$siteweb = $moyen->coordonnee;
 						break;
 				}
 			}
 		}
 		$row->telephone = $telephones;
+// 		$row->telephone = ((count($telephones) != 0) ? $telephones : null);
+// 		$row->fax = (isset($fax) ? $fax : null);
+// 		$row->email = (isset($email) ? $email : null);
+// 		$row->siteweb = (isset($siteweb) ? $siteweb : null);
 		unset($row->informations);
 		
 		// description
@@ -108,6 +125,7 @@ abstract class BasicSitraMigration extends Migration {
 		// adresse
 		$row->adresse1 = $row->localisation->adresse->adresse1;
 		$row->adresse2 = $row->localisation->adresse->adresse2;
+		$row->adresse3 = $row->localisation->adresse->adresse3;
 		$row->codepostal = $row->localisation->adresse->codePostal;
 		$row->commune = $this->getCommune($row->localisation->adresse->commune->id);
 		unset($row->localisation->adresse);
@@ -158,4 +176,16 @@ abstract class BasicSitraMigration extends Migration {
 	public function prepare(stdClass $entity, stdClass $row) {
 		$entity->language = 'fr';
 	}
+	
+// 	function folder_is_empty($path) {
+// 		$handle = opendir($path);
+// 		$count = 0;
+		
+// 		while ($file = readdir($handle) && $count < 3) {
+// 			$count++;
+// 		}
+		
+// 		if ($count>2) return false ;
+// 		return true;
+// 	}
 }
