@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Sitra Base feature.
+ */
+
+include_once 'sitra_base.features.inc';

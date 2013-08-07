@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the HCO feature.
+ */
+
+include_once 'hco.features.inc';
