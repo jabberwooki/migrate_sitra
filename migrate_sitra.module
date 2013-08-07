@@ -1,1 +1,151 @@
 <?php
+/**
+ * @file 
+ * @author Christophe Espiau <christophe.espiau@korora.fr>
+ * @license GPL
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ *
+ */
+
+
+/**
+ * Implements hook_menu().
+ */
+function migrate_sitra_menu() {
+	$items = array();
+
+	$items['admin/content/migrate_sitra'] = array(
+		'title' => 'Sitra',
+		'description' => 'Sitra notifications',
+		'page callback' => 'migrate_sitra_notifications',
+		'access callback' => TRUE,
+		'file' => 'migrate_sitra.pages.inc',
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'weight' => 10,
+	);
+  $items['admin/content/migrate_sitra/notifications'] = array(
+    'title' => 'Notifications',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 5,
+  );
+	
+	$items['admin/content/migrate_sitra/exported_files'] = array(
+		'title' => 'Exported files',
+		'description' => 'Sitra exported files stored locally',
+		'page callback' => 'migrate_sitra_exported_files',
+		'access callback' => TRUE,
+		'file' => 'migrate_sitra.pages.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 10,
+	);
+	
+  // Administration page.
+//   $items['admin/config/sitra'] = array(
+//    'title' => 'Sitra settings',
+//    'description' => 'Configure Sitra imports.',
+//    //'position' => 'left',
+//    'page callback' => 'drupal_get_form',
+//    'page arguments' => array('sitra_admin_settings'),
+//    'access arguments' => array('administer Sitra'),
+//    'file' => 'sitra.admin.inc',
+//   );
+	
+	$items['sitra-notifications'] = array(
+		'title' => 'Sitra2 notifications',
+		'description' => 'PHP webservice to receive Sitra2 exports notifications',
+		'page callback' => 'migrate_sitra_execute_ws_call',
+		'access callback' => 1,
+		'access arguments' => array('access content'),
+		'file' => 'migrate_sitra.ws.inc',
+		'type' => MENU_CALLBACK,
+	);
+
+	$items['sitra_import'] = array(
+			'title' => 'Sitra2 import',
+			'description' => 'Launches import from exported files archive',
+			'page callback' => 'sitra_launch_import',
+			'access callback' => 1,
+			'access arguments' => array('access content'),
+			'type' => MENU_CALLBACK,
+	);
+	
+	return $items;
+}
+
+
+function export_archive_unzip($archive=null) {
+	
+// 	$archive_data = db_select('migrate_sitra_exported','mse')
+// 		->fields('mse', array('fid','path'))
+// 		->condition('imported', '0')
+// 		->orderBy('path','ASC')
+// 		->execute()->fetch();
+	
+// 	if (isset($archive_data->path)) dsm('ok');
+// 	else dsm ('vide');
+// 	dsm($archive_data);
+
+// 	$archiver = archiver_get_archiver($archive_data->path);
+// 	$extract_location = 'public://sitra-imports';
+	
+// 	$archiver->extract($extract_location);
+	
+// 	db_update('migrate_sitra_exported')
+// 	->fields(array('imported' => 1))
+// 	->condition('fid', $archive_data->fid)
+// 	->execute();
+
+	return 'toto';
+}
+
+function sitra_launch_import() {
+	// Unzip the oldest non imported archive.
+	$archive_data = db_select('migrate_sitra_exported','mse')
+		->fields('mse', array('fid','path'))
+		->condition('imported', '0')
+		->orderBy('path','ASC')
+		->execute()->fetch();
+	
+	if (!isset($archive_data->path)) {
+		watchdog('sitra imports', t('There is not export archive available for import'));
+		dsm('0 archive à importer');
+		return 'fonction sitra_launch_import';
+	}
+	
+	// First of all, we must empty the extract location.
+	$extract_location = 'public://sitra-imports';
+	if (file_unmanaged_delete_recursive($extract_location)) {
+		return "repertoire vidé";
+	}
+	else {
+		return "echec vidage repertoire";
+	}
+	
+	$archiver = archiver_get_archiver($archive_data->path);
+	
+	$archiver->extract($extract_location);
+	
+	db_update('migrate_sitra_exported')
+		->fields(array('imported' => 1))
+		->condition('fid', $archive_data->fid)
+		->execute();
+		
+// 	dsm(migrate_migrations());
+// 	$migrations = migrate_migrations();
+// 	dsm($migrations);
+	
+// 	foreach ($migrations as $key->$migration_info) {
+// 		$migration = Migration::getInstance($key);
+// 		$result = $migration->processImport();
+// 		watchdog('sitra imports', t('%sitra_object import result : %result', array('%sitra_object' => strtoupper($key), '%result' => $result)));
+// 	}
+
+	return 'fonction sitra_launch_import';
+}
+
+/**
+ * Implements hook_cron()
+ */
+function migrate_sitra_cron() {
+	//sitra_launch_import();
+}
