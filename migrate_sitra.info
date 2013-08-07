@@ -1,13 +1,11 @@
-name = "Migrate from Sitra"
+name = "Migrate Sitra"
 description = "Migrate tourism data from Sitra to Drupal 7."
 package = "Sitra"
 core = 7.x
 
-dependencies[] = email
-dependencies[] = link
 dependencies[] = migrate
 dependencies[] = migrate_extras
-dependencies[] = geofield
+dependencies[] = features
 dependencies[] = field_group
 
 # include files containing Migrate classes for Sitra
@@ -15,5 +13,7 @@ files[] = migrate_sitra.migrate.inc
 files[] = sitra.inc
 files[] = cam.sitra.inc
 files[] = eve.sitra.inc
+files[] = hco.sitra.inc
+files[] = hlo.sitra.inc
 files[] = hot.sitra.inc
 files[] = res.sitra.inc

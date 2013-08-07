@@ -17,6 +17,14 @@ function migrate_sitra_migrate_api() {
         'class_name' => 'EveMigration',
         'group_name' => 'sitra',
       ),
+  		'hco' => array(
+  			'class_name' => 'HcoMigration',
+  			'group_name' => 'sitra',
+  		),
+  		'hlo' => array(
+  			'class_name' => 'HloMigration',
+  			'group_name' => 'sitra',
+  		),
   		'hot' => array(
   			'class_name' => 'HotMigration',
   			'group_name' => 'sitra',
