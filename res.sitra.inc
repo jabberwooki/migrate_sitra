@@ -61,32 +61,32 @@ class ResMigration extends BasicSitraMigration {
 		$this->description = t('Sitra restaurant objects (RES)');
 
 		// Source.
-		$list = variable_get('file_public_path', conf_path() . '/files') . '/sitra-exports/selections.json';
-		$item = variable_get('file_public_path', conf_path() . '/files') . '/sitra-exports/objets_modifies/objets_modifies-:id.json';
+		$list = variable_get('file_public_path', conf_path() . '/files') . '/sitra-imports/selections.json';
+		$item = variable_get('file_public_path', conf_path() . '/files') . '/sitra-imports/objets_modifies/objets_modifies-:id.json';
 		$fields = array(
-				'id' => 'Sitra2 object id',
-				'identifierSitra1' => 'Sitra1 object id',
-				'nom_Fr' => 'Name',
-				'descriptifCourt_Fr' => 'Short description',
-				'descriptifDetaille_Fr' => 'Detailled description',
-				'geo_type' => 'Geometry type of the geofield',
-				'adresse1' => 'Postal address - first field',
-				'adresse2' => 'Postal address - Second field',
-				'codepostal' => 'Postal address - Postal code field',
-				'commune' => 'Postal address - City',
-				'telephone' => 'Phone number(s)',
-				'fax' => 'Fax number',
-				'email' => 'Contact email',
-				'siteweb' => 'Web site url',
-				'ouverture' => 'Opening period',
-				'tarifs' => 'Prices',
-				'modes_paiement' => 'Array of Payment means',
-				//'image_url' => 'External url of the main picture',
-				//'images_url' => 'External urls of additional pictures',
-				'type_Fr' => 'Restauration type',
-				'classement_Fr' => 'Restaurant classification',
-				'categories_Fr' => 'Restaurant category(ies)',
-					
+			'id' => 'Sitra2 object id',
+			'identifierSitra1' => 'Sitra1 object id',
+			'nom_Fr' => 'Name',
+			'descriptifCourt_Fr' => 'Short description',
+			'descriptifDetaille_Fr' => 'Detailled description',
+			'geo_type' => 'Geometry type of the geofield',
+			'adresse1' => 'Postal address - first field',
+			'adresse2' => 'Postal address - Second field',
+			'adresse2' => 'Postal address - Third field',
+			'codepostal' => 'Postal address - Postal code field',
+			'commune' => 'Postal address - City',
+			'telephone' => 'Phone number(s)',
+			'fax' => 'Fax number',
+			'email' => 'Contact email',
+			'siteweb' => 'Web site url',
+			'ouverture' => 'Opening period',
+			'tarifs' => 'Prices',
+			'modes_paiement' => 'Array of Payment means',
+			'image_url' => 'External url of the main picture',
+			'images_url' => 'External urls of additional pictures',
+			'type_Fr' => 'Restauration type',
+			'classement_Fr' => 'Restaurant classification',
+			'categories_Fr' => 'Restaurant category(ies)',		
 		);
 		$this->source = new MigrateSourceList(new ResListJSON($list), new MigrateItemJSON($item, array()), $fields);
 
@@ -120,6 +120,7 @@ class ResMigration extends BasicSitraMigration {
 		$this->addFieldMapping('field_sitra_geolocalisation', 'geo_type')->arguments($geo_arguments);
 		$this->addFieldMapping('field_sitra_adresse_1', 'adresse1');
 		$this->addFieldMapping('field_sitra_adresse_2', 'adresse2');
+		$this->addFieldMapping('field_sitra_adresse_3', 'adresse3');
 		$this->addFieldMapping('field_sitra_code_postal', 'codepostal');
 		$this->addFieldMapping('field_sitra_commune', 'commune');
 
@@ -133,15 +134,15 @@ class ResMigration extends BasicSitraMigration {
 		$this->addFieldMapping('field_sitra_tarifs', 'tarifs');
 		$this->addFieldMapping('field_sitra_modes_paiement', 'modes_paiement');
 
-// 		$this->addFieldMapping('field_sitra_image_principale', 'image_url');
-// 		$this->addFieldMapping('field_sitra_image_principale:file_replace')->defaultValue(FILE_EXISTS_REPLACE);
-// 		$this->addFieldMapping('field_sitra_image_principale:alt', 'image_legende');
-// 		$this->addFieldMapping('field_sitra_image_principale:title', 'image_legende');
+		$this->addFieldMapping('field_sitra_image_principale', 'image_url');
+		$this->addFieldMapping('field_sitra_image_principale:file_replace')->defaultValue(FILE_EXISTS_REPLACE);
+		$this->addFieldMapping('field_sitra_image_principale:alt', 'image_legende');
+		$this->addFieldMapping('field_sitra_image_principale:title', 'image_legende');
 
-// 		$this->addFieldMapping('field_sitra_images', 'images_url');
-// 		$this->addFieldMapping('field_sitra_images:file_replace')->defaultValue(FILE_EXISTS_REPLACE);
-// 		$this->addFieldMapping('field_sitra_images:alt', 'images_legende');
-// 		$this->addFieldMapping('field_sitra_images:title', 'images_legende');
+		$this->addFieldMapping('field_sitra_images', 'images_url');
+		$this->addFieldMapping('field_sitra_images:file_replace')->defaultValue(FILE_EXISTS_REPLACE);
+		$this->addFieldMapping('field_sitra_images:alt', 'images_legende');
+		$this->addFieldMapping('field_sitra_images:title', 'images_legende');
 		
 		$this->addFieldMapping('field_sitra_type_restauration', 'type_Fr');
 		$this->addFieldMapping('field_sitra_classement', 'classement_Fr');
@@ -164,7 +165,6 @@ class ResMigration extends BasicSitraMigration {
 		// informations restauration - type
 		$type_id = $row->informationsRestauration->restaurationType->id;
 		$row->type_Fr = $this->getElementReferenceLibelle($type_id);
-		dsm($row->type_Fr);
 		
 		// informations restauration - classement
 		$classement_id = $row->informationsRestauration->classement->id;

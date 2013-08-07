@@ -65,33 +65,33 @@ class EveMigration extends BasicSitraMigration {
 		$this->description = t('Sitra evenement objects (EVE)');
 
 		// Source.
-		$list = variable_get('file_public_path', conf_path() . '/files') . '/sitra-exports/selections.json';
-		$item = variable_get('file_public_path', conf_path() . '/files') . '/sitra-exports/objets_modifies/objets_modifies-:id.json';
+		$list = variable_get('file_public_path', conf_path() . '/files') . '/sitra-imports/selections.json';
+		$item = variable_get('file_public_path', conf_path() . '/files') . '/sitra-imports/objets_modifies/objets_modifies-:id.json';
 		$fields = array(
-				'id' => 'Sitra2 object id',
-				'identifierSitra1' => 'Sitra1 object id',
-				'nom_Fr' => 'Name',
-				'descriptifCourt_Fr' => 'Short description',
-				'descriptifDetaille_Fr' => 'Detailled description',
-				'geo_type' => 'Geometry type of the geofield',
-				'adresse1' => 'Postal address - first field',
-				'adresse2' => 'Postal address - Second field',
-				'codepostal' => 'Postal address - Postal code field',
-				'commune' => 'Postal address - City',
-				'telephone' => 'Phone number(s)',
-				'fax' => 'Fax number',
-				'email' => 'Contact email',
-				'siteweb' => 'Web site url',
-				'ouverture' => 'Opening period',
- 				'tarifs' => 'Prices',
+			'id' => 'Sitra2 object id',
+			'identifierSitra1' => 'Sitra1 object id',
+			'nom_Fr' => 'Name',
+			'descriptifCourt_Fr' => 'Short description',
+			'descriptifDetaille_Fr' => 'Detailled description',
+			'geo_type' => 'Geometry type of the geofield',
+			'adresse1' => 'Postal address - first field',
+			'adresse2' => 'Postal address - Second field',
+			'adresse2' => 'Postal address - Third field',
+			'codepostal' => 'Postal address - Postal code field',
+			'commune' => 'Postal address - City',
+			'telephone' => 'Phone number(s)',
+			'fax' => 'Fax number',
+			'email' => 'Contact email',
+			'siteweb' => 'Web site url',
+			'ouverture' => 'Opening period',
+ 			'tarifs' => 'Prices',
 // 				'modes_paiement' => 'Array of Payment means',
-				'image_url' => 'External url of the main picture',
-				'images_url' => 'External urls of additional pictures',
-				'type_Fr' => 'Event type',
-				'categories_Fr' => 'Event categories',
-				'themes_Fr' => 'Event themes',
-				'portee_Fr' => 'Event coverage',
-					
+			'image_url' => 'External url of the main picture',
+			'images_url' => 'External urls of additional pictures',
+			'type_Fr' => 'Event type',
+			'categories_Fr' => 'Event categories',
+			'themes_Fr' => 'Event themes',
+			'portee_Fr' => 'Event coverage',		
 		);
 		$this->source = new MigrateSourceList(new EveListJSON($list), new MigrateItemJSON($item, array()), $fields);
 
@@ -125,6 +125,7 @@ class EveMigration extends BasicSitraMigration {
 		$this->addFieldMapping('field_sitra_geolocalisation', 'geo_type')->arguments($geo_arguments);
 		$this->addFieldMapping('field_sitra_adresse_1', 'adresse1');
 		$this->addFieldMapping('field_sitra_adresse_2', 'adresse2');
+		$this->addFieldMapping('field_sitra_adresse_3', 'adresse3');
 		$this->addFieldMapping('field_sitra_code_postal', 'codepostal');
 		$this->addFieldMapping('field_sitra_commune', 'commune');
 
