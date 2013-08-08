@@ -123,7 +123,7 @@ function sitra_launch_import() {
 		
 			// 3- We launch all defined migrations, one after each other.
 			$migrations = migrate_migrations();
-			foreach ($migrations as $key->$migration_info) {
+			foreach ($migrations as $key=>$migration_info) {
 				$migration = Migration::getInstance($key);
 				$result = $migration->processImport();
 				watchdog('sitra imports', t('%sitra_object import result : %result', array('%sitra_object' => strtoupper($key), '%result' => $result)));
@@ -137,7 +137,7 @@ function sitra_launch_import() {
 		}
 		else {
 			watchdog('sitra imports', t("Directory 'sitra-imports' cleaning failed."));
-			return;
+			//return;
 		}
 	}
 }
