@@ -99,7 +99,7 @@ function export_archive_unzip($archive=null) {
 }
 
 function sitra_launch_import() {
-	// Unzip the oldest non imported archive.
+	// Get the oldest non imported archive infos.
 	$archive_data = db_select('migrate_sitra_exported','mse')
 		->fields('mse', array('fid','path'))
 		->condition('imported', '0')
@@ -108,44 +108,43 @@ function sitra_launch_import() {
 	
 	if (!isset($archive_data->path)) {
 		watchdog('sitra imports', t('There is not export archive available for import'));
-		dsm('0 archive à importer');
-		return 'fonction sitra_launch_import';
-	}
-	
-	// First of all, we must empty the extract location.
-	$extract_location = 'public://sitra-imports';
-	if (file_unmanaged_delete_recursive($extract_location)) {
-		return "repertoire vidé";
+		//dsm('0 archive à importer');
+		//return "aucun fichier à importer"; //'fonction sitra_launch_import';
 	}
 	else {
-		return "echec vidage repertoire";
-	}
-	
-	$archiver = archiver_get_archiver($archive_data->path);
-	
-	$archiver->extract($extract_location);
-	
-	db_update('migrate_sitra_exported')
-		->fields(array('imported' => 1))
-		->condition('fid', $archive_data->fid)
-		->execute();
+		$extract_location = 'public://sitra-imports';
+		// 1- We must first empty the extract location.
+		if (file_unmanaged_delete_recursive($extract_location)) {
+			watchdog('sitra imports', t("Directory 'sitra-imports' cleaned."));
 		
-// 	dsm(migrate_migrations());
-// 	$migrations = migrate_migrations();
-// 	dsm($migrations);
-	
-// 	foreach ($migrations as $key->$migration_info) {
-// 		$migration = Migration::getInstance($key);
-// 		$result = $migration->processImport();
-// 		watchdog('sitra imports', t('%sitra_object import result : %result', array('%sitra_object' => strtoupper($key), '%result' => $result)));
-// 	}
-
-	return 'fonction sitra_launch_import';
+			// 2- The export archive is deflated.
+			$archiver = archiver_get_archiver($archive_data->path);
+			$archiver->extract($extract_location);
+		
+			// 3- We launch all defined migrations, one after each other.
+			$migrations = migrate_migrations();
+			foreach ($migrations as $key->$migration_info) {
+				$migration = Migration::getInstance($key);
+				$result = $migration->processImport();
+				watchdog('sitra imports', t('%sitra_object import result : %result', array('%sitra_object' => strtoupper($key), '%result' => $result)));
+			}
+		
+			// 4- Finally, we update the 'imported' value in 'migrate_sitra_exported' database table.
+			db_update('migrate_sitra_exported')
+			->fields(array('imported' => 1))
+			->condition('fid', $archive_data->fid)
+			->execute();
+		}
+		else {
+			watchdog('sitra imports', t("Directory 'sitra-imports' cleaning failed."));
+			return;
+		}
+	}
 }
 
 /**
  * Implements hook_cron()
  */
 function migrate_sitra_cron() {
-	//sitra_launch_import();
+	sitra_launch_import();
 }
