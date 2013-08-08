@@ -5,6 +5,41 @@
  */
 
 /**
+ * Implements hook_requirements().
+ * 
+ * Ensure that sitra_exports and sitra_imports directories can be created.
+ */
+function migrate_sitra_requirements($phase) {
+	$requirements = array();
+	if ($phase == 'install') {
+		$requirements['migrate_sitra_directories'] = array(
+				'title' => t('Migrate Sitra directories creation'),
+				'severity' => REQUIREMENT_OK,
+				'value' => t('Exists'),
+		);
+		
+		$exports_path = 'public://sitra-exports';
+		$imports_path = 'public://sitra-imports';
+		if (!file_prepare_directory($exports_path, FILE_CREATE_DIRECTORY) || !file_prepare_directory($imports_path, FILE_CREATE_DIRECTORY)) {
+			$paths_array = array('%path1' => file_uri_target($exports_path), '%path2' => file_uri_target($imports_path));
+			$requirements['migrate_sitra_directories']['description'] = t('The Migrate Sitra directories %path1 and/or %path2 could not be created. Please ensure that the webserver has permission to create directories.', $paths_array);
+			$requirements['migrate_sitra_directories']['severity'] = REQUIREMENT_ERROR;
+			$requirements['migrate_sitra_directories']['value'] = t('Unable to create');
+		}
+		
+		return $requirements;
+	}
+}
+
+/**
+ * Implements hook_install().
+ */
+function migrate_sitra_install() {
+	drupal_mkdir('public://sitra-exports');
+	drupal_mkdir('public://sitra-imports');
+}
+
+/**
  * Implements hook_schema().
  */
 function migrate_sitra_schema() {
