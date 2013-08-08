@@ -19,7 +19,7 @@ function migrate_sitra_requirements($phase) {
 		// so we need to test only one.
 		$exports_path = 'public://sitra-exports';
 		if (!file_prepare_directory($exports_path, FILE_CREATE_DIRECTORY)) {
-			$desc = $t('The Migrate Sitra directory %path1 could not be created. Please ensure that the webserver has permission to create directory.', file_uri_target($exports_path));
+			$desc = $t('The Migrate Sitra directory %path could not be created. Please ensure that the webserver has permission to create directory.', array('%path' => file_uri_target($exports_path)));
 			$requirements['migrate_sitra_directories'] = array(
 				'title' => $t('Migrate Sitra directories creation'),
 				'description' => $desc,
