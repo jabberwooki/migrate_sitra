@@ -14,6 +14,7 @@ dependencies[] = image
 dependencies[] = link
 dependencies[] = node
 dependencies[] = number
+dependencies[] = sitra_base
 dependencies[] = text
 features[ctools][] = field_group:field_group:1
 features[features_api][] = api:2
