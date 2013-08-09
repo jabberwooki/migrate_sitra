@@ -38,7 +38,7 @@ class HloListJSON extends MigrateListJSON {
 			$json = $response->data;
 		}
 		if ($json) {
-			$data = drupal_json_decode($json);dsm($data);
+			$data = drupal_json_decode($json);
 			if ($data) {
 				foreach ($data as $item) {
 					if ($item['objetsTouristiques'][0]['type'] == 'HEBERGEMENT_LOCATIF') {
