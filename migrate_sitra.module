@@ -110,7 +110,12 @@ function sitra_launch_import() {
 					$migration = Migration::getInstance($sitra_object);
 					$migration->prepareUpdate();
 					if (isset($limit)) {
-						if (is_int($limit)) {
+						// arg(1) always return a string.
+						$converted_limit = intval($limit);
+						// Possible cases :
+						// - url is correct (i.e, .../sitra_import/hot/12),  so arg(1) returns '12' and intval() returns 12. Limit param is usable.
+						// - url is wrong (i.e, .../sitra_import/hot/toto), so arg(1) returns 'toto' and intval() returns 0. Limit param is useless.
+						if ($limit > 0) {
 							$options['limit']['value'] = $limit;
 							$options['limit']['unit'] = 'items';
 							$result = $migration->processImport($options);
