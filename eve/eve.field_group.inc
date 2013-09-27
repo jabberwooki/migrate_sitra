@@ -21,7 +21,7 @@ function eve_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Adresse',
-    'weight' => '14',
+    'weight' => '15',
     'children' => array(
       0 => 'field_sitra_adresse_1',
       1 => 'field_sitra_adresse_2',
